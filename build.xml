@@ -1,0 +1,158 @@
+<?xml version="1.0"?>
+<!-- Copyright 2019, Simone Karin Lehmann, (simone at lisanet dot de), FreeBSD license -->
+
+<project name="bt747"
+    default="runtime-mac-sign"
+    basedir="."
+    xmlns:if="ant:if"
+    xmlns:unless="ant:unless">
+    
+    
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     |
+     |  The properties and paths
+     |
+     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    
+    <property environment="env"/>
+
+    <!--property name="app.url" value="https://sourceforge.net/projects/bt747/files/Development/BT747_2.X.2025_full.zip" /-->
+    <!--property name="app.version" value = "2.X.2025" /-->
+    <!--property name="app.shortversion" value = "2.2" /-->
+
+    <property file="build.properties"/>
+    <property name="runtime.dir" value="runtime"/>
+    <property name="download.dir" value="download" />
+    <property name="appbundler.url" value="https://lisanet.de/dnl/appbundler-1.1.jar"/>
+    <property name="lib.dir" value="lib"/>
+	
+	<!-- setup the directory hierarchy we need -->
+	<target name="makedirs" >
+		<mkdir dir="${runtime.dir}"/>
+		<mkdir dir="${download.dir}"/>
+		<mkdir dir="${lib.dir}"/>
+	</target>
+	
+    <!-- Deletes the runtime directory. -->
+    <target name="clean" >
+        <delete dir="${runtime.dir}"/>
+    </target>
+    
+    <target name="clean-all" >
+      <delete dir="${runtime.dir}"/>
+      <delete dir="${download.dir}"/>
+	  <delete dir="${lib.dir}"/>
+    </target>
+    
+    <!-- Creates the runtime folder for the Mac platform -->
+    <target name="runtime-mac" depends="javahome, clean, makedirs, download-appbundler, download-zip, src-exists, unzip" >
+        
+        <taskdef
+        name="bundleapp"
+        classname="com.oracle.appbundler.AppBundlerTask"
+        classpath="lib/appbundler-1.1.jar" />
+        
+        <bundleapp
+            outputdirectory="${runtime.dir}"
+            workingdirectory="$APP_ROOT/Contents/Resources"
+            name="BT747"
+            executableName="BT747"
+            icon="icon/BT747.icns"
+            identifier="de.lisanet.bt747"
+            signature="libt"
+            version="${app.shortversion}"
+            shortversion="${app.version}"
+            copyright="GNU General Public License v2"
+            highResolutionCapable="true"
+            mainclassname="bt747.j2se_view.BT747Main">
+            <!--runtime dir="${java.home}/.."/-->
+            <option value="-Dapple.laf.useScreenMenuBar=true" />
+            <option value="-Xdock:name=BT747" />
+            <option value="-Xmx256m" />
+            <option value="-splash:$APP_ROOT/Contents/Java/splash.png" />
+            <option value="-DOSX_OFFICIAL_APP=true" />
+            <option value="-Dsun.jnu.encoding=utf-8" />
+            <classpath file="${download.dir}/BT747/dist/BT747_j2se.jar" />
+            <librarypath file="${download.dir}/BT747/lib/rxtx-2.2pre2-bins/Mac_OS_X/mac-iharder/librxtxSerial.jnilib" />
+            <!--librarypath file="${download.dir}/BT747/lib/rxtx-2.2pre2-bins/RXTXcomm.jar" /-->
+        </bundleapp>
+  
+  
+        <copy todir="${runtime.dir}/BT747.app/Contents/Java/lib">
+            <fileset dir="${download.dir}/BT747/dist">
+            	<exclude name="BT747_j2se.jar" />
+            </fileset>
+        </copy>
+
+  		<!-- remove unneeded archs from lib -->
+  		<move file="${runtime.dir}/BT747.app/Contents/MacOS/librxtxSerial.jnilib" tofile="${runtime.dir}/BT747.app/Contents/MacOS/x.jnilib" />
+  		<exec executable="ditto">
+  			<arg value="--arch" />
+  			<arg value="x86_64" />
+  			<arg value="${runtime.dir}/BT747.app/Contents/MacOS/x.jnilib" />
+  			<arg value="${runtime.dir}/BT747.app/Contents/MacOS/librxtxSerial.jnilib" />
+  		</exec>
+  		<delete file="${runtime.dir}/BT747.app/Contents/MacOS/x.jnilib" />
+        
+        <!-- copy needed jars to lib, use newer RXTX -->
+        <copy todir="${runtime.dir}/BT747.app/Contents/Java/lib">
+            <fileset dir="${download.dir}/BT747/lib" >
+            	<include name="*.jar" />
+            	<exclude name="jopt-simple-2.4.1.jar" />
+            	<exclude name="Waba_only.jar" />
+            	<exclude name="win32comm.jar" />
+            </fileset>
+        </copy>
+		<copy file="${download.dir}/BT747/lib/rxtx-2.2pre2-bins/RXTXcomm.jar" todir="${runtime.dir}/BT747.app/Contents/Java/lib" overwrite="true" />
+		
+		<!-- copy the splash screen -->
+		<copy file="icon/splash.png" todir="${runtime.dir}/BT747.app/Contents/Java" overwrite="true" />
+    </target>
+
+
+
+    <target name="runtime-mac-sign" depends="runtime-mac">
+      <!-- sign the app -->
+      <echo message="signing the application with your Developer ID Application Certificate..."/>
+      <exec executable="codesign" os="Mac OS X" failifexecutionfails="false">
+          <arg value="-f"/>
+          <arg value="-s"/>
+          <arg value="Developer ID App"/>
+          <arg value="${runtime.dir}/BT747.app/Contents/MacOS/librxtxSerial.jnilib"/>
+          <arg value="${runtime.dir}/BT747.app"/>
+      </exec>
+    </target>
+    
+    <!-- download some packages -->
+    <target name="download-appbundler">
+        <get dest="${lib.dir}" src="${appbundler.url}" skipexisting="true"/>
+    </target>
+    
+    <target name="download-zip">
+        <get dest="${download.dir}" src="${app.url}" skipexisting="true"/>
+    </target>
+ 
+     <target name="src-exists">
+        <available property="src.exists" file="${download.dir}/BT747/build.xml"/>
+        <echo if:set="src.exists">src already unzipped</echo>
+    </target>
+   
+    <target name="unzip" depends="download-zip, src-exists" >
+    	<exec unless:set="src.exists" executable="unzip" os="Mac OS X" failifexecutionfails="false">
+        	<arg value="${download.dir}/BT747*zip"/>
+          	<arg value="-d"/>
+          	<arg value="${download.dir}/BT747"/>
+        </exec>
+    </target>
+    
+    <!-- builtin java.home results in .../jre wich is not usable directly, we need to use it ${java.home}/.. or we use this target -->
+    <target name="javahome">
+    	<exec executable="/usr/libexec/java_home" outputproperty="java_home">
+    		<arg value="-v"/>
+    		<arg value="1.8"/>
+    	</exec>
+    	<echo>${java_home}</echo>
+    	<echo>${user.home}</echo>
+    </target>
+    
+</project>

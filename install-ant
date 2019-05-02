@@ -1,0 +1,27 @@
+#!/bin/bash
+
+ANT="https://www-eu.apache.org/dist//ant/binaries/apache-ant-1.9.14-bin.zip"
+INSTALLDIR=/usr/local/ant
+
+#--- no need to edit anything beyond this line
+BASEDIR=$(pwd)
+mkdir ant
+cd ant
+
+curl -LO $ANT
+unzip apache-ant*zip
+
+mkdir -p "$INSTALLDIR"
+cd apache-ant*
+cp -a * "$INSTALLDIR"
+
+export PATH="$INSTALLDIR:$PATH"
+cd "$INSTALLDIR"
+ant -f fetch.xml -Ddest=system
+
+echo "$INSTALLDIR/bin" > /etc/paths.d/ant
+
+cd "$BASEDIR"
+rm -rf ant
+
+
