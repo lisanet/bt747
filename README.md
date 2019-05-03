@@ -7,13 +7,15 @@ Copyright: 2019, Simone Karin Lehmann, BSD License
 
 ## What do you need to build the app?
 
-### Java SE Runtime Enviroment 
+### Java  
 
-Of couse, since BT747 is a Java application, you need the Java SE Runtime environment. This build
-depends on version 8 of the JRE. 
+Of course, since BT747 is a Java application, you need a Java Runtime environment or a Java Development Kit. 
+This build can use Java 8 JRE  or Java 11 JDK. It will automaticly use the latest version.
 
 Follow this link and download to get the [latest Mac OS X x64 dmg version of JRE 8](https://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
 and install it on your system.
+
+Or, donwload the latest Java 11 JDK from [Oracle](https://www.oracle.com/technetwork/java/javase/downloads/index.html)
 
 ### Ant
 Ant is a command-line tool written in Java, which allows the easy build of 
