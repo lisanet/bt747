@@ -1,0 +1,26 @@
+#!/bin/bash
+# patch to get Apple LookAndFeel working with Java 11
+
+DIR="download/BT747"
+
+
+FILE="$DIR/src_j2se/bt747/j2se_view/J2SEAppController.java"
+patched=
+grep -q com.apple.laf.AquaLookAndFeel "$FILE" && patched=yes
+
+if [ "$patched" != "yes" ]; then
+
+cat > "$DIR/build.properties" <<EOF
+build_version = 2.X
+build.current.revision = 2025p1
+
+EOF
+
+sed -i "" -e "s/\"apple.laf.AquaLookAndFeel/\"com.apple.laf.AquaLookAndFeel/g" "$FILE"
+
+cd "$DIR"
+ant
+
+else
+echo "BT747 already patched"
+fi
