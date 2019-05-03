@@ -15,15 +15,10 @@
      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     
     <property environment="env"/>
-
-    <!--property name="app.url" value="https://sourceforge.net/projects/bt747/files/Development/BT747_2.X.2025_full.zip" /-->
-    <!--property name="app.version" value = "2.X.2025" /-->
-    <!--property name="app.shortversion" value = "2.2" /-->
-
     <property file="build.properties"/>
     <property name="runtime.dir" value="runtime"/>
     <property name="download.dir" value="download" />
-    <property name="appbundler.url" value="https://lisanet.de/dnl/appbundler-1.1.jar"/>
+    <property name="appbundler.url" value="https://lisanet.de/dnl/appbundler-1.1.5.jar"/>q
     <property name="lib.dir" value="lib"/>
 	
 	<!-- setup the directory hierarchy we need -->
@@ -45,12 +40,12 @@
     </target>
     
     <!-- Creates the runtime folder for the Mac platform -->
-    <target name="runtime-mac" depends="javahome, clean, makedirs, download-appbundler, download-zip, src-exists, unzip" >
+    <target name="runtime-mac" depends=" clean, makedirs, download-appbundler, download-zip, src-exists, unzip, patch_bt747" >
         
         <taskdef
         name="bundleapp"
         classname="com.oracle.appbundler.AppBundlerTask"
-        classpath="lib/appbundler-1.1.jar" />
+        classpath="lib/appbundler-1.1.5.jar" />
         
         <bundleapp
             outputdirectory="${runtime.dir}"
@@ -65,8 +60,8 @@
             copyright="GNU General Public License v2"
             highResolutionCapable="true"
             mainclassname="bt747.j2se_view.BT747Main">
-            <!--runtime dir="${java.home}/.."/-->
-            <option value="-Dapple.laf.useScreenMenuBar=true" />
+            <!--runtime dir="${java_home}/.."/-->
+			<option value="-Dapple.laf.useScreenMenuBar=true" />
             <option value="-Xdock:name=BT747" />
             <option value="-Xmx256m" />
             <option value="-splash:$APP_ROOT/Contents/Java/splash.png" />
@@ -81,6 +76,7 @@
         <copy todir="${runtime.dir}/BT747.app/Contents/Java/lib">
             <fileset dir="${download.dir}/BT747/dist">
             	<exclude name="BT747_j2se.jar" />
+				<exclude name="bt747_dev" />
             </fileset>
         </copy>
 
@@ -149,10 +145,14 @@
     <target name="javahome">
     	<exec executable="/usr/libexec/java_home" outputproperty="java_home">
     		<arg value="-v"/>
-    		<arg value="1.8"/>
+    		<arg value="11"/>
     	</exec>
     	<echo>${java_home}</echo>
     	<echo>${user.home}</echo>
     </target>
+	
+	<target name="patch_bt747">
+		<exec executable="./patch_bt747"/>
+	</target>
     
 </project>
