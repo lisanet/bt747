@@ -18,7 +18,7 @@
     <property file="build.properties"/>
     <property name="runtime.dir" value="runtime"/>
     <property name="download.dir" value="download" />
-    <property name="appbundler.url" value="https://lisanet.de/dnl/appbundler-1.1.5.jar"/>q
+    <property name="appbundler.url" value="https://lisanet.de/dnl/appbundler-1.1.5.jar" />
     <property name="lib.dir" value="lib"/>
 	
 	<!-- setup the directory hierarchy we need -->
