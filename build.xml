@@ -48,6 +48,8 @@
         classpath="lib/appbundler-1.1.5.jar" />
         
         <bundleapp
+            jvmRequired="11"
+            jvmExact="false"
             outputdirectory="${runtime.dir}"
             workingdirectory="$APP_ROOT/Contents/Resources"
             name="BT747"
