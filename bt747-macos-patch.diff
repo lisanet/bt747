@@ -1,0 +1,20 @@
+diff -uwr -x .DS_Store BT747-orig/src_j2se/bt747/j2se_view/J2SEAppController.java BT747/src_j2se/bt747/j2se_view/J2SEAppController.java
+--- BT747-orig/src_j2se/bt747/j2se_view/J2SEAppController.java	2017-04-23 13:46:38.000000000 +0200
++++ BT747/src_j2se/bt747/j2se_view/J2SEAppController.java	2019-05-08 20:27:36.000000000 +0200
+@@ -79,6 +79,7 @@
+                     ((java.lang.System.getProperty("user.home").length() != 0) ? java.lang.System
+                             .getProperty("user.home")
+                             + java.lang.System.getProperty("file.separator")
++                            + (platform.startsWith("Mac") ? "Library/Preferences/" : "")
+                             + SETTINGS_NAME
+                             : (
+ 
+@@ -924,7 +925,7 @@
+             "com.sun.java.swing.plaf.motif.MotifLookAndFeel", // NOI18N
+             "javax.swing.plaf.metal.MetalLookAndFeel", // NOI18N
+             "com.apple.mrj.swing.MacLookAndFeel", // NOI18N
+-            "apple.laf.AquaLookAndFeel", // NOI18N
++            "com.apple.laf.AquaLookAndFeel", // NOI18N
+             "javax.swing.plaf.mac.MacLookAndFeel", // NOI18N
+             }; // NOI18N
+     /** Index for Mac look and feel */

@@ -16,7 +16,8 @@ build.current.revision = 2025p1
 
 EOF
 
-sed -i "" -e "s/\"apple.laf.AquaLookAndFeel/\"com.apple.laf.AquaLookAndFeel/g" "$FILE"
+cd "$DIR/.."
+patch -p0 < ../bt747-macos-patch.diff
 
 cd "$DIR"
 ant
