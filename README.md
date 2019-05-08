@@ -38,7 +38,7 @@ To do so, please read the manual at [https://ant.apache.org/manual-1.9.x/index.h
 
 ## How to build the app?
 
-If you've installed the JRE 8 and Ant, it's quiet easy to build the app. Just got to the directory where you've downlaoded
+If you've installed the JDK 11+ and Ant, it's quiet easy to build the app. Just got to the directory where you've downlaoded
 this repo and type
 
       % ant
